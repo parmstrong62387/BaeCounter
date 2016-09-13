@@ -37,16 +37,21 @@
 	   return $counters;
 	}
 
-	function updateCounter($counterToUpdate, $newCount) {
+	function updateCounter($counterToUpdate) {
 		if (!isConnected()) {
 			connect();
 		}
+
+		$counters = getCounters();
+		$newCount = $counters[$counterToUpdate] + 1;
 
 		$query = "UPDATE `counters` SET `count`=$newCount WHERE `counter_name`='$counterToUpdate'";
 
 		if (!mysql_query($query)) {
 			$msg = 'Could not update counter: ' . $counterToUpdate . '. Error: ' . mysql_error();
 			echo $msg;
+		} else {
+			echo $newCount;
 		}
 	}
 ?>

@@ -3,12 +3,11 @@
 	include 'dbconn.php';
 
 	$counterToUpdate = $_GET['counter'];
-	$counters = getCounters();
 
 	if (isset($counterToUpdate)) {
-		 $counters[$counterToUpdate]++;
-		 updateCounter($counterToUpdate, $counters[$counterToUpdate]);
+		 updateCounter($counterToUpdate);
 	} else {
+		$counters = getCounters();
 ?>
 <html>
 
@@ -20,42 +19,51 @@
 
 	<script type="text/javascript">
 	$(document).ready(function() {
-		$('h2 a.active').on('click', function(e) {
+		var $links = $('h2 a.active');
+
+		$links.on('click', function(e) {
 			e.preventDefault();
-			var $ptr = $(this);
-			if (!$ptr.hasClass('active')) {
-				return;
-			}
-
-			$ptr.removeClass('active');
-			var url = $ptr.attr('href');
-
-			$.ajax({
-				'url': url,
-				'success': function(result) {
-					updateCount($ptr, true);
-				},
-				'failure': function(result) {
-					updateCount($ptr, false);
-				}
-			});
+			updateCount($(this), $(this).attr('href'));
 		});
+
+		function checkForUpdates() {
+			$links.each(function() {
+				var url = 'getCount.php?counter=' + $(this).attr('id');
+				updateCount($(this), url);
+			});
+		}
+		window.setInterval(function() { 
+			checkForUpdates(); 
+		}, 5000);
 	});
 
-	function updateCount($ptr, success) {
-		var $countSpan = $ptr.parent().find('span');
-		$countSpan.fadeOut(200, function() {
-			var newCount = Number($countSpan.html());
+	function updateCount($ptr, url) {
+		if (!$ptr.hasClass('active')) {
+			return;
+		}
 
-			if (success) {
-				newCount++;
+		$ptr.removeClass('active');
+		$.ajax({
+			'url': url,
+			'success': function(result) {
+				updateCountText($ptr, result);
 			}
+		});	
+	}
 
-			$countSpan.html(newCount);
-			$countSpan.fadeIn(200, function() {
-				$ptr.addClass('active');
+	function updateCountText($ptr, newCount) {
+		var $countSpan = $ptr.parent().find('span');
+		if ($countSpan.html() !== newCount) {
+
+			$countSpan.fadeOut(200, function() {
+				$countSpan.html(newCount);
+				$countSpan.fadeIn(200, function() {
+					$ptr.addClass('active');
+				});
 			});
-		});
+		} else {
+			$ptr.addClass('active'); 
+		}
 	}
 	</script>
 </head>
