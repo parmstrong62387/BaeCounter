@@ -25,22 +25,25 @@
    }
 
    $updateCounter = $_GET['counter'];
-   if (isset($updateCounter)) {
+   $isUpdateRequest = isset($updateCounter);
+   if ($isUpdateRequest) {
    	 $counters[$updateCounter]++;
      $query = "UPDATE `counters` SET `count`=$counters[$updateCounter] WHERE counter_name='$updateCounter'";
      if (! mysql_query( $query, $conn )) {
      	die('Could not update data: ' . mysql_error());
      }
    }
+
+   if (!$isUpdateRequest) {
 ?>
 
 <head>
 	<title>BAE Counter</title>
 	<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
 	<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+	<script   src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 
 	<script type="text/javascript">
-	/*
 	$(document).ready(function() {
 		$('h2 a.active').on('click', function(e) {
 			e.preventDefault();
@@ -50,21 +53,35 @@
 			}
 
 			$ptr.removeClass('active');
-			var counterName = $ptr.attr('id');
+			var url = $ptr.attr('href');
+
 			$.ajax({
-				'url': '?counter=' + counterName,
+				'url': url,
 				'success': function(result) {
-					var $countSpan = $ptr.parent().find('span');
-					$countSpan.html(Number($countSpan.html()));
-					$ptr.addClass('active');
+					updateCount($ptr, true);
 				},
 				'failure': function(result) {
-					$ptr.addClass('active');
+					updateCount($ptr, false);
 				}
 			});
 		});
 	});
-	*/
+
+	function updateCount($ptr, success) {
+		var $countSpan = $ptr.parent().find('span');
+		$countSpan.fadeOut(200, function() {
+			var newCount = Number($countSpan.html());
+
+			if (success) {
+				newCount++;
+			}
+
+			$countSpan.html(newCount);
+			$countSpan.fadeIn(200, function() {
+				$ptr.addClass('active');
+			});
+		});
+	}
 	</script>
 </head>
 
@@ -83,5 +100,9 @@
 		</div>
 	</div>
 </body>
+
+<?php
+	}
+?>
 
 </html>
