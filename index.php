@@ -1,44 +1,19 @@
+<?php
+
+	include 'dbconn.php';
+
+	$counterToUpdate = $_GET['counter'];
+	$counters = getCounters();
+
+	if (isset($counterToUpdate)) {
+		 $counters[$counterToUpdate]++;
+		 updateCounter($counterToUpdate, $counters[$counterToUpdate]);
+	} else {
+?>
 <html>
 
-<?php
-   $dbhost = "sql213.hostingmyself.com";
-   $dbuser = "hmsfo_18881848";
-   $dbpass = "freescripthostpass";
-   $dbname = "hmsfo_18881848_counter";
-   
-   //Connect to MySQL Server
-   $conn = mysql_connect($dbhost, $dbuser, $dbpass);
-   
-   //Select Database
-   mysql_select_db($dbname) or die(mysql_error());
-   
-   //build query
-   $query = "SELECT * FROM counters";
-   
-   //Execute query
-   $qry_result = mysql_query($query) or die(mysql_error());
-
-   $counters = array();
-
-   while($row = mysql_fetch_array($qry_result)) {
-     $counters[$row[counter_name]] = $row[count];
-   }
-
-   $updateCounter = $_GET['counter'];
-   $isUpdateRequest = isset($updateCounter);
-   if ($isUpdateRequest) {
-   	 $counters[$updateCounter]++;
-     $query = "UPDATE `counters` SET `count`=$counters[$updateCounter] WHERE counter_name='$updateCounter'";
-     if (! mysql_query( $query, $conn )) {
-     	die('Could not update data: ' . mysql_error());
-     }
-   }
-
-   if (!$isUpdateRequest) {
-?>
-
 <head>
-	<title>BAE Counter</title>
+	<title>Bae Counter</title>
 	<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
 	<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 	<script   src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
@@ -101,8 +76,7 @@
 	</div>
 </body>
 
+</html>
 <?php
 	}
 ?>
-
-</html>
