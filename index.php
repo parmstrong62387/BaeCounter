@@ -20,17 +20,23 @@
 	<script   src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 	<style type="text/css">
 		h1 {
-			margin: auto;
 			font-size: 50px;
+			padding: 20px;
+		}
+		.span6 {
+			position: relative;
 		}
 		h2 {
-			position: relative;
-			top: 200px;
-			left: 100px;
-			pointer-events: none;
-			color: #FFFFFF;
-			-webkit-text-stroke-width: 1px;
-   			-webkit-text-stroke-color: black;
+		    position: absolute;
+		    top: 80%;
+		    left: 20%;
+		    margin-top: -20px; //this should be a hard value that corresponds to half the height of the text itself
+		    width: 100%;
+		    text-align: center;
+		    pointer-events: none;
+		    color: #FFFFFF;
+		    -webkit-text-stroke-width: 1px;
+		    -webkit-text-stroke-color: black;
 		}
 		img {
 			height: 300px;
@@ -44,18 +50,14 @@
 			}
 			.span6 {
 				width: 100%;
+				padding: 5%;
 			}
 			h1 {
 				font-size: 30px;
 			}
-			h2 {
-				top: 150px;
-			}
 			img {
-				width: 85%;
+				width: 100%;
 				height: auto;
-				display: block;
-			    margin-left: 5%;
 			}
 		}
 	</style>
