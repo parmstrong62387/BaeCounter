@@ -1,0 +1,50 @@
+h1 {
+	font-size: 50px;
+}
+.span12 {
+	padding: 20px;
+}
+label {
+	display: inline-block;
+	margin-bottom: 15px;
+}
+.span6 {
+	position: relative;
+}
+h2 {
+    position: absolute;
+    top: 80%;
+    left: 20%;
+    margin-top: -20px; //this should be a hard value that corresponds to half the height of the text itself
+    width: 100%;
+    text-align: center;
+    pointer-events: none;
+    color: #FFFFFF;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+}
+img {
+	height: 300px;
+}
+audio {
+	display: none;
+}
+@media only screen and (max-width: 768px) {
+	.container {
+		width: 100%;
+	}
+	.span12 {
+		width: 100%;
+	}
+	.span6 {
+		width: 100%;
+		padding: 5%;
+	}
+	h1 {
+		font-size: 30px;
+	}
+	img {
+		width: 100%;
+		height: auto;
+	}
+}

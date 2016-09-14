@@ -49,9 +49,9 @@
 
 		if (!mysql_query($query)) {
 			$msg = 'Could not update counter: ' . $counterToUpdate . '. Error: ' . mysql_error();
-			echo $msg;
+			return $msg;
 		} else {
-			echo $newCount;
+			return $newCount;
 		}
 	}
 ?>
