@@ -41,26 +41,26 @@
 	}
 
 	$(document).ready(function() {
-		var $links = $('a.active');
+		var $counterDivs = $('div.counter');
+		var $links = $('div.counter a.active');
 
 		$links.on('click', function(e) {
 			e.preventDefault();
 			updateCount($(this), $(this).attr('href'));
 		});
 
-		function checkForUpdates() {
-			$links.each(function() {
-				var url = 'getCount.php?counter=' + $(this).attr('id');
-				updateCount($(this), url);
-			});
-		}
-		// window.setInterval(function() { 
-		// 	checkForUpdates(); 
-		// }, 5000);
-
 		$('img[data-alt-src]').each(function() { 
 	        new Image().src = $(this).data('alt-src'); 
 	    }).hover(sourceSwap, sourceSwap); 
+
+	    var evtSource = new EventSource("getCount.php");
+	    evtSource.onmessage = function(e) {
+			var response = JSON.parse(e.data);
+			$counterDivs.each(function() {
+				var id = $(this).attr('id');
+				updateCountText($(this).find('span.count'), response[id]);
+			});
+	    };
 	});
 
 	function updateCount($ptr, url) {
@@ -78,7 +78,7 @@
 	}
 
 	function updateCountText($ptr, newCount) {
-		var $countSpan = $ptr.parent().find('span');
+		var $countSpan = $ptr.parent().find('span.count');
 		if ($countSpan.html() !== newCount) {
 
 			$countSpan.fadeOut(200, function() {
@@ -100,13 +100,13 @@
 			<div class="span12" style="margin-bottom: 20px;">
 				<h1>Bae counter</h1>
 			</div>
-			<div class="span6">
-				<h2>Patrick: <span id="patrick-count"><?php echo $counters[patrick]; ?></span></h2>
-				<a class="active" id="patrick" href="?counter=patrick"><img src="cat-gif-1-1.gif" data-alt-src="cat-gif-1-2.gif" /></a>
+			<div class="span6 counter" id="patrick">
+				<h2>Patrick: <span class="count"></span></h2>
+				<a class="active" href="?counter=patrick"><img src="cat-gif-1-1.gif" data-alt-src="cat-gif-1-2.gif" /></a>
 			</div>
-			<div class="span6">
-				<h2>Yingying: <span><?php echo $counters[yingying]; ?></span></h2>
-				<a class="active" id="yingying" href="?counter=yingying"><img src="cat-gif-2-1.gif" data-alt-src="cat-gif-2-2.gif" /></a>
+			<div class="span6 counter" id="yingying">
+				<h2>Yingying: <span class="count"></span></h2>
+				<a class="active" href="?counter=yingying"><img src="cat-gif-2-1.gif" data-alt-src="cat-gif-2-2.gif" /></a>
 			</div>
 		</div>
 	</div>
