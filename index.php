@@ -16,7 +16,7 @@
 			<div class="row">
 				<div class="span12" style="margin-bottom: 20px;">
 					<h1>Bae counter</h1>
-					<input type="checkbox" id="enable-audio" checked="checked"/>
+					<input type="checkbox" id="enable-audio" />
 					<label for="enable-audio">Enable Audio?</label>
 				</div>
 				<div class="span6 counter" id="patrick">
@@ -24,14 +24,14 @@
 					<audio controls preload="auto">
 						<source src="audio/meow-1.mp3" type="audio/mpeg">
 					</audio>
-					<a class="active" href="updateCount.php?counter=patrick"><img src="img/cat-gif-1-1.gif" data-alt-src="img/cat-gif-1-2.gif" /></a>
+					<a class="active updateLink" href="updateCount.php?counter=patrick"><img src="img/cat-gif-1-1.gif" data-alt-src="img/cat-gif-1-2.gif" /></a>
 				</div>
 				<div class="span6 counter" id="yingying">
 					<h2>Yingying: <span class="count"></span></h2>
 					<audio controls preload="auto">
 						<source src="audio/meow-2.mp3" type="audio/mpeg">
 					</audio>
-					<a class="active" href="updateCount.php?counter=yingying"><img src="img/cat-gif-3-1.gif" data-alt-src="img/cat-gif-3-2.gif" /></a>
+					<a class="active updateLink" href="updateCount.php?counter=yingying"><img src="img/cat-gif-3-1.gif" data-alt-src="img/cat-gif-3-2.gif" /></a>
 				</div>
 			</div>
 		</div>
