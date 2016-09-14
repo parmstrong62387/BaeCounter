@@ -30,6 +30,9 @@
 			-webkit-text-stroke-width: 1px;
    			-webkit-text-stroke-color: black;
 		}
+		img {
+			height: 300px;
+		}
 	</style>
 
 	<script type="text/javascript">
@@ -106,7 +109,7 @@
 			</div>
 			<div class="span6 counter" id="yingying">
 				<h2>Yingying: <span class="count"></span></h2>
-				<a class="active" href="?counter=yingying"><img src="cat-gif-2-1.gif" data-alt-src="cat-gif-2-2.gif" /></a>
+				<a class="active" href="?counter=yingying"><img src="cat-gif-3-1.gif" data-alt-src="cat-gif-3-2.gif" /></a>
 			</div>
 		</div>
 	</div>
