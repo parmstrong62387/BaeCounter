@@ -41,6 +41,9 @@
 		img {
 			height: 300px;
 		}
+		audio {
+			display: none;
+		}
 		@media only screen and (max-width: 768px) {
 			.container {
 				width: 100%;
@@ -77,6 +80,7 @@
 		$links.on('click', function(e) {
 			e.preventDefault();
 			updateCount($(this), $(this).attr('href'));
+			$(this).parents('div.counter').find('audio')[0].play();
 		});
 
 		$('img[data-alt-src]').each(function() { 
@@ -108,7 +112,7 @@
 	}
 
 	function updateCountText($ptr, newCount) {
-		var $countSpan = $ptr.parent().find('span.count');
+		var $countSpan = $ptr.parents('div.counter').find('span.count');
 		if ($countSpan.html() !== newCount) {
 
 			$countSpan.fadeOut(200, function() {
@@ -132,11 +136,17 @@
 			</div>
 			<div class="span6 counter" id="patrick">
 				<h2>Patrick: <span class="count"></span></h2>
-				<a class="active" href="?counter=patrick"><img src="cat-gif-1-1.gif" data-alt-src="cat-gif-1-2.gif" /></a>
+				<audio controls preload="auto">
+					<source src="audio/meow-1.mp3" type="audio/mpeg">
+				</audio>
+				<a class="active" href="?counter=patrick"><img src="img/cat-gif-1-1.gif" data-alt-src="img/cat-gif-1-2.gif" /></a>
 			</div>
 			<div class="span6 counter" id="yingying">
 				<h2>Yingying: <span class="count"></span></h2>
-				<a class="active" href="?counter=yingying"><img src="cat-gif-3-1.gif" data-alt-src="cat-gif-3-2.gif" /></a>
+				<audio controls preload="auto">
+					<source src="audio/meow-2.mp3" type="audio/mpeg">
+				</audio>
+				<a class="active" href="?counter=yingying"><img src="img/cat-gif-3-1.gif" data-alt-src="img/cat-gif-3-2.gif" /></a>
 			</div>
 		</div>
 	</div>
