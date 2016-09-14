@@ -13,6 +13,8 @@
 
 <head>
 	<title>Bae Counter</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
 	<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
 	<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 	<script   src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
@@ -32,6 +34,29 @@
 		}
 		img {
 			height: 300px;
+		}
+		@media only screen and (max-width: 768px) {
+			.container {
+				width: 100%;
+			}
+			.span12 {
+				width: 100%;
+			}
+			.span6 {
+				width: 100%;
+			}
+			h1 {
+				font-size: 30px;
+			}
+			h2 {
+				top: 150px;
+			}
+			img {
+				width: 85%;
+				height: auto;
+				display: block;
+			    margin-left: 5%;
+			}
 		}
 	</style>
 
