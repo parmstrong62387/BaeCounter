@@ -21,7 +21,13 @@
 	<style type="text/css">
 		h1 {
 			font-size: 50px;
+		}
+		.span12 {
 			padding: 20px;
+		}
+		label {
+			display: inline-block;
+    		margin-bottom: 15px;
 		}
 		.span6 {
 			position: relative;
@@ -76,11 +82,16 @@
 	$(document).ready(function() {
 		var $counterDivs = $('div.counter');
 		var $links = $('div.counter a.active');
+		var $enableAudio = $('input#enable-audio');
 
 		$links.on('click', function(e) {
 			e.preventDefault();
+			
 			updateCount($(this), $(this).attr('href'));
-			$(this).parents('div.counter').find('audio')[0].play();
+			
+			if ($enableAudio.is(':checked')) {
+				$(this).parents('div.counter').find('audio')[0].play();
+			}
 		});
 
 		$('img[data-alt-src]').each(function() { 
@@ -133,6 +144,8 @@
 		<div class="row">
 			<div class="span12" style="margin-bottom: 20px;">
 				<h1>Bae counter</h1>
+				<input type="checkbox" id="enable-audio" checked="checked"/>
+				<label for="enable-audio">Enable Audio?</label>
 			</div>
 			<div class="span6 counter" id="patrick">
 				<h2>Patrick: <span class="count"></span></h2>
