@@ -1,7 +1,11 @@
+window.firstLoad = true;
+
 $(document).ready(function() {
 	$('div.counter a.active').on('click', function(e) {
 		e.preventDefault();
-		updateCount($(this).closest('div.counter'));
+		var $counterDiv = $(this).closest('div.counter');
+		playAudio($counterDiv);
+		updateCount($counterDiv);
 	});
 
 	$('img[data-alt-src]').each(function() { 
@@ -13,8 +17,12 @@ $(document).ready(function() {
 		var response = JSON.parse(e.data);
 		$('div.counter').each(function() {
 			var id = $(this).attr('id');
-			updateCountText($(this), response[id], false);
+			updateCountText($(this), response[id], false, window.firstLoad);
 		});
+
+		if (window.firstLoad) {
+			window.firstLoad = false;
+		}
     };
 
     $('select#theme-select').on('change', function(e) {
@@ -41,8 +49,6 @@ function updateCount($counterDiv) {
 		return;
 	}
 
-	playAudio($counterDiv);
-
 	$link.removeClass('active');
 	var url = $link.attr('href');
 
@@ -60,7 +66,7 @@ function updateCountText($counterDiv, newCount, clickEvent) {
 
 	if ($countSpan.html() !== newCount) {
 
-		if (!clickEvent) {
+		if (!(clickEvent || window.firstLoad)) {
 			playAudio($counterDiv);
 		}
 

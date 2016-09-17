@@ -22,7 +22,7 @@
 					<h1>Bae counter</h1>
 				</div>
 				<div class="span6 controls">
-					<input type="checkbox" id="enable-audio" />
+					<input type="checkbox" id="enable-audio" checked="checked"/>
 					<label for="enable-audio">Enable Audio?</label>
 				</div>
 				<div class="span6 controls">

@@ -1,7 +1,7 @@
 <?php
-$DEFAULT_THEME = "cat";
-
 function getCurrentTheme() {
+	$DEFAULT_THEME = "cat";
+	
 	$currentTheme = $_GET["theme"];
 	if (!isset($currentTheme)) {
 		$currentTheme = $DEFAULT_THEME;
