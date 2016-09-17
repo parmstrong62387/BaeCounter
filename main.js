@@ -16,6 +16,10 @@ $(document).ready(function() {
 			updateCountText($(this), response[id], false);
 		});
     };
+
+    $('select#theme-select').on('change', function(e) {
+    	window.location.search = $.query.set("theme", $(this).val());
+    });
 });
 
 var sourceSwap = function () {

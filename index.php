@@ -13,6 +13,7 @@ if (!isset($theme)) {
 		<link rel="stylesheet" type="text/css" href="screen.css"/>
 		<link id="favicon" rel="shortcut icon" href="img/favicon-32.png" sizes="16x16 32x32 48x48" type="image/png" />
 		<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+		<script src="jquery.query-object.js" type="text/javascript"></script>
 		<script src="main.js" type="text/javascript"></script>
 	</head>
 
