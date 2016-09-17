@@ -1,10 +1,8 @@
-<?php
-$theme = $_GET["theme"];
-if (!isset($theme)) {
-	$theme = 'cat';
-}
-?><html>
-
+<html>
+	<?php 
+		include("themes.php"); 
+		$currentTheme = getCurrentTheme();
+	?>
 	<head>
 		<title>Bae Counter</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,user-scalable=no"/>
@@ -30,23 +28,24 @@ if (!isset($theme)) {
 				<div class="span6 controls">
 					<label for="theme-select">Choose Theme</label>
 					<select id="theme-select" name="theme">
-						<option value="cat" <?php if($theme=="cat"){echo "selected=\"selected\"";} ?>>Cat</option>
-						<option value="pokemon" <?php if($theme=="pokemon"){echo "selected=\"selected\"";} ?>>Pokemon</option>
+						<?php foreach(getThemes() as $theme): ?>
+						<option value="<?=$theme["name"];?>" <?=$theme["selected"];?>><?=$theme["friendlyName"];?></option>
+						<?php endforeach; ?>
 					</select>
 				</div>
 				<div class="span6 counter" id="patrick">
 					<h2>Patrick: <span class="count"></span></h2>
 					<audio controls preload="auto">
-						<source src="themes/<?=$theme;?>/audio-1.mp3" type="audio/mpeg">
+						<source src="themes/<?=$currentTheme;?>/audio-1.mp3" type="audio/mpeg">
 					</audio>
-					<a class="active updateLink" href="updateCount.php?counter=patrick"><img src="themes/<?=$theme;?>/image-1-1.gif" data-alt-src="themes/<?=$theme;?>/image-1-2.gif" /></a>
+					<a class="active updateLink" href="updateCount.php?counter=patrick"><img src="themes/<?=$currentTheme;?>/image-1-1.gif" data-alt-src="themes/<?=$currentTheme;?>/image-1-2.gif" /></a>
 				</div>
 				<div class="span6 counter" id="yingying">
 					<h2>Yingying: <span class="count"></span></h2>
 					<audio controls preload="auto">
-						<source src="themes/<?=$theme;?>/audio-2.mp3" type="audio/mpeg">
+						<source src="themes/<?=$currentTheme;?>/audio-2.mp3" type="audio/mpeg">
 					</audio>
-					<a class="active updateLink" href="updateCount.php?counter=yingying"><img src="themes/<?=$theme;?>/image-2-1.gif" data-alt-src="themes/<?=$theme;?>/image-2-2.gif" /></a>
+					<a class="active updateLink" href="updateCount.php?counter=yingying"><img src="themes/<?=$currentTheme;?>/image-2-1.gif" data-alt-src="themes/<?=$currentTheme;?>/image-2-2.gif" /></a>
 				</div>
 			</div>
 		</div>
