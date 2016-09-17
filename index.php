@@ -1,4 +1,9 @@
-<html>
+<?php
+$theme = $_GET["theme"];
+if (!isset($theme)) {
+	$theme = 'cat';
+}
+?><html>
 
 	<head>
 		<title>Bae Counter</title>
@@ -16,22 +21,31 @@
 			<div class="row">
 				<div class="span12" style="margin-bottom: 20px;">
 					<h1>Bae counter</h1>
+				</div>
+				<div class="span6 controls">
 					<input type="checkbox" id="enable-audio" />
 					<label for="enable-audio">Enable Audio?</label>
+				</div>
+				<div class="span6 controls">
+					<label for="theme-select">Choose Theme</label>
+					<select id="theme-select" name="theme">
+						<option value="cat" <?php if($theme=="cat"){echo "selected=\"selected\"";} ?>>Cat</option>
+						<option value="pokemon" <?php if($theme=="pokemon"){echo "selected=\"selected\"";} ?>>Pokemon</option>
+					</select>
 				</div>
 				<div class="span6 counter" id="patrick">
 					<h2>Patrick: <span class="count"></span></h2>
 					<audio controls preload="auto">
-						<source src="audio/meow-1.mp3" type="audio/mpeg">
+						<source src="themes/<?=$theme;?>/audio-1.mp3" type="audio/mpeg">
 					</audio>
-					<a class="active updateLink" href="updateCount.php?counter=patrick"><img src="img/cat-gif-1-1.gif" data-alt-src="img/cat-gif-1-2.gif" /></a>
+					<a class="active updateLink" href="updateCount.php?counter=patrick"><img src="themes/<?=$theme;?>/image-1-1.gif" data-alt-src="themes/<?=$theme;?>/image-1-2.gif" /></a>
 				</div>
 				<div class="span6 counter" id="yingying">
 					<h2>Yingying: <span class="count"></span></h2>
 					<audio controls preload="auto">
-						<source src="audio/piplup-1.mp3" type="audio/mpeg">
+						<source src="themes/<?=$theme;?>/audio-2.mp3" type="audio/mpeg">
 					</audio>
-					<a class="active updateLink" href="updateCount.php?counter=yingying"><img src="img/piplup-1-1.gif" data-alt-src="img/piplup-1-2.gif" /></a>
+					<a class="active updateLink" href="updateCount.php?counter=yingying"><img src="themes/<?=$theme;?>/image-2-1.gif" data-alt-src="themes/<?=$theme;?>/image-2-2.gif" /></a>
 				</div>
 			</div>
 		</div>
