@@ -22,7 +22,7 @@ function getThemes() {
 
 		$themeObj = array();
 		$themeObj["name"] = $themeDir;
-		$themeObj["friendlyName"] = ucfirst($themeDir);
+		$themeObj["friendlyName"] = ucwords(str_replace("_", " ", $themeDir));
 		$themeObj["selected"] = basename($themeDir) == $currentTheme ? "selected" : "";
 
 		array_push($themes, $themeObj);
