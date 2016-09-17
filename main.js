@@ -13,7 +13,7 @@ $(document).ready(function() {
 		var response = JSON.parse(e.data);
 		$('div.counter').each(function() {
 			var id = $(this).attr('id');
-			updateCountText($(this), response[id]);
+			updateCountText($(this), response[id], false);
 		});
     };
 });
@@ -37,24 +37,28 @@ function updateCount($counterDiv) {
 		return;
 	}
 
+	playAudio($counterDiv);
+
 	$link.removeClass('active');
 	var url = $link.attr('href');
 
 	$.ajax({
 		'url': url,
 		'success': function(result) {
-			updateCountText($counterDiv, result);
+			updateCountText($counterDiv, result, true);
 		}
 	});	
 }
 
-function updateCountText($counterDiv, newCount) {
+function updateCountText($counterDiv, newCount, clickEvent) {
 	var $link = $counterDiv.find('a.updateLink')
 	var $countSpan = $counterDiv.find('span.count');
 
 	if ($countSpan.html() !== newCount) {
 
-		playAudio($counterDiv);
+		if (!clickEvent) {
+			playAudio($counterDiv);
+		}
 
 		$countSpan.fadeOut(200, function() {
 			$countSpan.html(newCount);
