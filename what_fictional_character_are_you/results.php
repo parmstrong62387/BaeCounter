@@ -25,5 +25,21 @@ if( !isset($_POST['qcount']) ) {
 	<p>Whether you like it or not, you speak your mind. And you're inspiring the next generation to be successful like you.</p>
 	<p>DAAHHHHHHLIN</p>
 	<p><a href="/what_fictional_character_are_you">Play again?</a></p>
+	<p>&nbsp;</p>
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/E2tMV96xULk?autoplay=1" frameborder="0" allowfullscreen></iframe>
+	<p>&nbsp;</p>
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/hHUbLv4ThOo?autoplay=1" frameborder="0" allowfullscreen></iframe>
+	<p>&nbsp;</p>
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/HMqgVXSvwGo?autoplay=1" frameborder="0" allowfullscreen></iframe>
+	<p>&nbsp;</p>
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/jKbR7u8J5PU?autoplay=1" frameborder="0" allowfullscreen></iframe>
+	<p>&nbsp;</p>
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/E2tMV96xULk?autoplay=1" frameborder="0" allowfullscreen></iframe>
+	<p>&nbsp;</p>
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/hHUbLv4ThOo?autoplay=1" frameborder="0" allowfullscreen></iframe>
+	<p>&nbsp;</p>
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/HMqgVXSvwGo?autoplay=1" frameborder="0" allowfullscreen></iframe>
+	<p>&nbsp;</p>
+	<iframe width="560" height="315" src="https://www.youtube.com/embed/jKbR7u8J5PU?autoplay=1" frameborder="0" allowfullscreen></iframe>
 </body>
 </html>
