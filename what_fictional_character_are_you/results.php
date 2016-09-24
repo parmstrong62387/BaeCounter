@@ -1,11 +1,17 @@
-<html>
+<?php
+if( !isset($_POST['qcount']) ) {
+	header('Location: /what_fictional_character_are_you');
+}
+?><html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>What Fictional Character Are You?</title>
-	<meta property="og:image" content="http://baecounter.hostingmyself.com/what_fictional_character_are_you/ogimage.jpg" >
-	<meta property="og:url" content="http://baecounter.hostingmyself.com/what_fictional_character_are_you/" >
-	<meta property="og:title" content="What Fictional Character Are You?" >
-	<meta property="og:description" content="Find out which peppy personality you identify with!" >
+	<meta property="og:image" content="http://baecounter.hostingmyself.com/what_fictional_character_are_you/pitbull.jpg" >
+	<meta property="og:image:height" content="512" >
+	<meta property="og:image:width" content="512" >
+	<meta property="og:url" content="http://baecounter.hostingmyself.com/what_fictional_character_are_you/results.php" >
+	<meta property="og:title" content="I got pitbull" >
+	<meta property="og:description" content="You're Mr. Worldwide. You play hard, and you work hard. Ultimately, you like the hunt. Want to find out your character?" >
 	<link type="text/css" rel="stylesheet" href="/what_fictional_character_are_you/style.min.css">
 </head>
 <body>
