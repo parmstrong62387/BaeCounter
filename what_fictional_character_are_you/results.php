@@ -2,7 +2,11 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>What Fictional Character Are You?</title>
-	<link type="text/css" rel="stylesheet" href="http://cdn.gotoquiz.com/style/2.0/style.min.css">
+	<meta property="og:image" content="http://baecounter.hostingmyself.com/what_fictional_character_are_you/ogimage.jpg" >
+	<meta property="og:url" content="http://baecounter.hostingmyself.com/what_fictional_character_are_you/" >
+	<meta property="og:title" content="What Fictional Character Are You?" >
+	<meta property="og:description" content="Find out which peppy personality you identify with!" >
+	<link type="text/css" rel="stylesheet" href="/what_fictional_character_are_you/style.min.css">
 </head>
 <body>
 	<h1>You got: PITBULL</h1>
