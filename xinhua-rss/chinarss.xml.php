@@ -43,7 +43,7 @@ class RssItem {
     public $month;
     public $day;
 
-    public $fullPubDate;
+    private $fullPubDate;
 
     public function __construct($href, $title, $year, $month, $day) 
     {
@@ -54,19 +54,42 @@ class RssItem {
         $this->day = $day;
     }
 
+    public function getFullPubDate() {
+        if (!isset($this->fullPubDate)) {
+            $this->fullPubDate = getFullPubDate($this->href);
+        }
+
+        return $this->fullPubDate;
+    }
+
 }
 
-function sortRssItems($a, $b) {
+function sortRssItemsByPubDate($a, $b) {
     $yearCmp = strcmp($a->year, $b->year);
     if ($yearCmp != 0) {
-        return $yearCmp;
+        return -1 * $yearCmp;
     }
     $monthCmp = strcmp($a->month, $b->month);
     if ($monthCmp != 0) {
-        return $monthCmp;
+        return -1 * $monthCmp;
     }
 
-    return strcmp($a->day, $b->day);
+    return -1 * strcmp($a->day, $b->day);
+}
+
+function sortRssItemsByFullPubDate($a, $b) {
+    $fullA = $a->getFullPubDate();
+    $fullB = $b->getFullPubDate();
+
+    if ($fullA === false || $fullB === false) {
+        return sortRssItemsByPubDate($a, $b);
+    }
+
+    if ($fullA == $fullB) {
+       return 0;
+    }
+
+    return -1 * ($fullA < $fullB ? -1 : 1);
 }
 
 function get_web_page($url)
@@ -105,26 +128,52 @@ function get_web_page($url)
 }
 
 function getFullPubDate($url) {
+    $debug = false;
     $metaDateFormat = "Y-m-d\TH:i:sT";
+    $spanDateFormat = "Y-m-d H:i:sT";
     $response = get_web_page($url);
+    $date = false;
     if ($response !== false) {
         $dom = new DOMDocument();
         @$dom->loadHTML($response);
         $xpath = new DOMXpath($dom);
         
-        $metaElement = $xpath->query("*/meta[@name='pubdate']/@content");
-        $spanElement = $xpath->query("*/span[@id='pubtime']");
+        $metaElement = $xpath->query("*/meta[@name='pubdate']");
+        $spanElement = $xpath->query("//span[@id='pubtime']");
 
-        if (!is_null($metaElement) && count($metaElement) > 0) {
-            $dateStr = trim($metaElement[0]->nodeValue);
-            return date_create_from_format($metaDateFormat, $dateStr);
-        } else if (!is_null($spanElement) && count($spanElement) > 0) {
+        if (!is_null($metaElement) && $metaElement->length > 0) {
+            $dateStr = trim($metaElement[0]->getAttribute("content"));
+
+            if ($debug) {
+                echo "From meta";
+                echo "\n";
+                echo $dateStr;
+                echo "\n";
+            }
+
+            $date = date_create_from_format($metaDateFormat, $dateStr);
+        } else if (!is_null($spanElement) && $spanElement->length > 0) {
             $dateStr = trim($spanElement[0]->nodeValue);
-            return date_create_from_format($metaDateFormat, $dateStr);
+            
+            if ($debug) {
+                echo "From span";
+                echo "\n";
+                echo $dateStr;
+                echo "\n";
+            }
+
+            $date = date_create_from_format($metaDateFormat, $dateStr);
+            if ($date === false) {
+                if (strpos($dateStr, 'Z') === false) {
+                    $date = date_create_from_format($spanDateFormat, $dateStr . 'Z');
+                } else {
+                    $date = date_create_from_format($spanDateFormat, $dateStr);
+                }
+            }
         }
     }
 
-    return false;
+    return $date;
 }
 
 try {
@@ -169,9 +218,11 @@ try {
         }
     }
 
-    // usort($rssItems, sortRssItems);
+    usort($rssItems, sortRssItemsByPubDate);
+    $rssItems = array_slice($rssItems, 0, 30);
+    usort($rssItems, sortRssItemsByFullPubDate);
 
-    for ($i = 0; $i < 20 && $i < count($rssItems); $i++) {
+    for ($i = 0; $i < 30 && $i < count($rssItems); $i++) {
         $item = $channel->addChild('item');
         $rssItem = $rssItems[$i];
 
@@ -179,7 +230,11 @@ try {
         $item->addChild('description', 'Hi baee');
         $item->addChild('link', $rssItem->href);
 
-        $item->addChild('pubDate', $rssItem->year . '-' . $rssItem->month . '-' . $rssItem->day);
+        if ($rssItem->getFullPubDate() !== false) {
+            $item->addChild('pubDate', date_format($rssItem->getFullPubDate(), 'c'));
+        } else {
+            $item->addChild('pubDate', $rssItem->year . '-' . $rssItem->month . '-' . $rssItem->day);
+        }
     }
 
 
@@ -191,7 +246,7 @@ try {
     //         } 
 
     $XML = $rss->asXML();
-    $XML = str_replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8"?>', $XML);
+    $XML = str_replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="utf-8"?>', $XML);
     Header('Content-type: application/xml');
     print($XML);
 

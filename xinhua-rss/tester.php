@@ -74,67 +74,69 @@ function get_web_page($url)
 }
 
 function getFullPubDate($url) {
+    $debug = true;
     $metaDateFormat = "Y-m-d\TH:i:sT";
+    $spanDateFormat = "Y-m-d H:i:sT";
     $response = get_web_page($url);
+    $date = false;
     if ($response !== false) {
         $dom = new DOMDocument();
         @$dom->loadHTML($response);
         $xpath = new DOMXpath($dom);
         
-        $metaElement = $xpath->query("*/meta[@name='pubdate']/@content");
-        $spanElement = $xpath->query("*/span[@id='pubtime']");
-        
-        // $elements = $xpath->query("*/div[@id='yourTagIdHere']");
+        $metaElement = $xpath->query("*/meta[@name='pubdate']");
+        $spanElement = $xpath->query("//span[@id='pubtime']");
 
-		if (!is_null($metaElement) && count($metaElement) > 0) {
-			$dateStr = trim($metaElement[0]->nodeValue);
-            $date = date_create_from_format($metaDateFormat, $dateStr);
-            
-            echo $dateStr;
-            echo "\n";
+        if (!is_null($metaElement) && $metaElement->length > 0) {
+            $dateStr = trim($metaElement[0]->getAttribute("content"));
 
-            if ($date !== false) {
-                echo date_format($date, 'c');
-            } else {
-                echo "couldn't parse date";
+            if ($debug) {
+                echo "From meta";
+                echo "\n";
+                echo $dateStr;
+                echo "\n";
             }
 
-            echo "\n";
-		} else if (!is_null($spanElement) && count($spanElement) > 0) {
-			$dateStr = trim($spanElement[0]->nodeValue);
             $date = date_create_from_format($metaDateFormat, $dateStr);
+        } else if (!is_null($spanElement) && $spanElement->length > 0) {
+            $dateStr = trim($spanElement[0]->nodeValue);
             
-            echo $dateStr;
-            echo "\n";
-
-            if ($date !== false) {
-                echo date_format($date, 'c');
-            } else {
-                echo "couldn't parse date";
+            if ($debug) {
+                echo "From span";
+                echo "\n";
+                echo $dateStr;
+                echo "\n";
             }
 
-            echo "\n";
-		}
+            $date = date_create_from_format($metaDateFormat, $dateStr);
+            if ($date === false) {
+                if (strpos($dateStr, 'Z') === false) {
+                    $date = date_create_from_format($spanDateFormat, $dateStr . 'Z');
+                } else {
+                    $date = date_create_from_format($spanDateFormat, $dateStr);
+                }
+            }
+        }
     }
 
-    return false;
+    return $date;
+}
+
+function printDate($date) {
+    if ($date === false) {
+        echo "Fail";
+    } else {
+        echo date_format($date, 'c');
+    }
+    echo "\n\n";
 }
 
 $urlWithMeta = "http://news.xinhuanet.com/english/2016-10/14/c_135754769.htm";
 $urlWithSpan = "http://news.xinhuanet.com/english/2016-10/14/c_135755015.htm";
+$urlWithSpanTwo = "http://news.xinhuanet.com/english/2016-10/16/c_135756947.htm";
 
-getFullPubDate($urlWithMeta);
-echo "\n";
-getFullPubDate($urlWithSpan);
-
-echo "\n";
-
-$rssItems = Array();
-array_push($rssItems, new RssItem("z test", "z test 2", "z test 3", "z test 4", "z test 5"));
-array_push($rssItems, new RssItem("test", "test 2", "test 3", "test 4", "test 5"));
-usort($rssItems, sortRssItems);
-echo $rssItems[0]->href;
-echo "\n";
-echo $rssItems[1]->href;
+printDate(getFullPubDate($urlWithMeta));
+printDate(getFullPubDate($urlWithSpan));
+printDate(getFullPubDate($urlWithSpanTwo));
 
 ?>
