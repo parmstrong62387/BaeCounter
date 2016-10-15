@@ -1,5 +1,7 @@
 <?php
 
+include '../dbconn.php';
+
 /**
  * SimpleXMLExtended Class
  *
@@ -129,6 +131,20 @@ function get_web_page($url)
 
 function getFullPubDate($url) {
     $debug = false;
+
+    //First, try to get the pub date from the database
+    $dbPubDate = getPubDateFromDB($url);
+    if ($dbPubDate !== false) {
+        if ($debug) {
+            echo "Found url in DB";
+            echo "\n";
+            echo $dbPubDate;
+            echo "\n";
+        }
+
+        return $dbPubDate;
+    }
+
     $metaDateFormat = "Y-m-d\TH:i:sT";
     $spanDateFormat = "Y-m-d H:i:sT";
     $response = get_web_page($url);
@@ -171,6 +187,11 @@ function getFullPubDate($url) {
                 }
             }
         }
+    }
+
+    //Add the new date to the DB to cache it with the associated URL
+    if ($date !== false) {
+        addPubDateToDB($url, date_format($date, 'c'));
     }
 
     return $date;

@@ -54,4 +54,33 @@
 			return $newCount;
 		}
 	}
+
+	function getPubDateFromDB($href) {
+		if (!isConnected()) {
+			connect();
+		}
+
+		//build query
+	   $query = "SELECT * FROM pub_dates WHERE href = '$href'";
+	   
+	   //Execute query
+	   $qry_result = mysql_query($query) or die(mysql_error());
+
+	   while($row = mysql_fetch_array($qry_result)) {
+	   		return date_create($row[pub_date]);
+	   }
+
+	   return false;
+	}
+
+	function addPubDateToDB($href, $pubDate) {
+		if (!isConnected()) {
+			connect();
+		}
+
+		//build query
+	   $query = "INSERT INTO pub_dates (href, pub_date) VALUES ('$href', '$pubDate')";
+
+	   mysql_query($query) or die(mysql_error());
+	}
 ?>
