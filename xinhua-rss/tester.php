@@ -1,5 +1,41 @@
 <?php
 
+class RssItem {
+
+    public $href;
+    public $title;
+    public $year;
+    public $month;
+    public $day;
+
+    public $fullPubDate;
+
+    public function __construct($href, $title, $year, $month, $day) 
+    {
+        $this->href = $href;
+        $this->title = $title;
+        $this->year = $year;
+        $this->month = $month;
+        $this->day = $day;
+    }
+
+}
+
+function sortRssItems($a, $b) {
+    $yearCmp = strcmp($a->year, $b->year);
+    if ($yearCmp != 0) {
+        return $yearCmp;
+    }
+    $monthCmp = strcmp($a->month, $b->month);
+    if ($monthCmp != 0) {
+        return $monthCmp;
+    }
+    $dayCmp = strcmp($a->day, $b->day);
+    if ($dayCmp != 0) {
+        return $dayCmp;
+    }
+}
+
 Header('Content-type: text/plain');
 
 function get_web_page($url)
@@ -90,5 +126,15 @@ $urlWithSpan = "http://news.xinhuanet.com/english/2016-10/14/c_135755015.htm";
 getFullPubDate($urlWithMeta);
 echo "\n";
 getFullPubDate($urlWithSpan);
+
+echo "\n";
+
+$rssItems = Array();
+array_push($rssItems, new RssItem("z test", "z test 2", "z test 3", "z test 4", "z test 5"));
+array_push($rssItems, new RssItem("test", "test 2", "test 3", "test 4", "test 5"));
+usort($rssItems, sortRssItems);
+echo $rssItems[0]->href;
+echo "\n";
+echo $rssItems[1]->href;
 
 ?>
