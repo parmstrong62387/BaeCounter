@@ -84,7 +84,7 @@ function getFullPubDate($url) {
         if ($debug) {
             echo "Found url in DB";
             echo "\n";
-            echo $dbPubDate;
+            echo date_format($dbPubDate, 'c');
             echo "\n";
         }
 
