@@ -2,8 +2,6 @@
 
 Header('Content-type: text/plain');
 
-$metaDateFormat = "Y-m-d\\Th:i:sT";
-
 function get_web_page($url)
 {
     $options = array(
@@ -40,6 +38,7 @@ function get_web_page($url)
 }
 
 function getFullPubDate($url) {
+    $metaDateFormat = "Y-m-d\TH:i:sT";
     $response = get_web_page($url);
     if ($response !== false) {
         $dom = new DOMDocument();
@@ -52,9 +51,33 @@ function getFullPubDate($url) {
         // $elements = $xpath->query("*/div[@id='yourTagIdHere']");
 
 		if (!is_null($metaElement) && count($metaElement) > 0) {
-			echo $metaElement[0]->nodeValue;
+			$dateStr = trim($metaElement[0]->nodeValue);
+            $date = date_create_from_format($metaDateFormat, $dateStr);
+            
+            echo $dateStr;
+            echo "\n";
+
+            if ($date !== false) {
+                echo date_format($date, 'c');
+            } else {
+                echo "couldn't parse date";
+            }
+
+            echo "\n";
 		} else if (!is_null($spanElement) && count($spanElement) > 0) {
-			echo $spanElement[0]->nodeValue;
+			$dateStr = trim($spanElement[0]->nodeValue);
+            $date = date_create_from_format($metaDateFormat, $dateStr);
+            
+            echo $dateStr;
+            echo "\n";
+
+            if ($date !== false) {
+                echo date_format($date, 'c');
+            } else {
+                echo "couldn't parse date";
+            }
+
+            echo "\n";
 		}
     }
 
