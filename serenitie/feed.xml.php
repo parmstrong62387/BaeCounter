@@ -15,10 +15,22 @@ $dom = new DOMDocument();
 $xpath = new DOMXpath($dom);    
 $textArea = $xpath->query("//textarea[@id='jsCode']");
 
+function parseDate($dateStr) {
+    return date_create_from_format("h:i A, M d, Y", $dateStr);
+}
+
+function formatDate($dateStr) {
+    $date = parseDate($dateStr);
+    if ($date === false) {
+        return "";
+    }
+
+    return date_format($date, 'c');
+}
+
 function sortResults($a, $b) {
-    $format = "h:i A, M d, Y";
-    $dateA = date_create_from_format($format, $a["mediaDateUts"]);
-    $dateB = date_create_from_format($format, $b["mediaDateUts"]);
+    $dateA = parseDate($a["mediaDateUts"]);
+    $dateB = parseDate($b["mediaDateUts"]);
 
     if ($dateA === false || $dateB === false) {
         return 0;
@@ -36,7 +48,7 @@ if (!is_null($textArea) && $textArea->length > 0) {
     
     $results = $json["results"][0];
     usort($results, sortResults);
-    
+
     foreach ($results as $result) {
         $url = $result["url"];
         if (strpos($url, ".com") === false) {
@@ -47,7 +59,7 @@ if (!is_null($textArea) && $textArea->length > 0) {
         $item->addChildWithCDATA("title", $result["title"]);
         $item->addChildWithCDATA("description", $result["description"]);
         $item->addChild("link", $url);
-        $item->addChild("pubDate", $result["mediaDateUts"]);
+        $item->addChild("pubDate", formatDate($result["mediaDateUts"]));
     }
 }
 
