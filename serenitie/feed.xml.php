@@ -8,7 +8,7 @@ $channel->addChild('title', 'Feed of my baee\'s stories');
 $channel->addChild('description', 'My baee writes all kinds of great stories. I want to stay up to date with them.');
 $channel->addChild('generator', 'Bae');
 
-$searchUrl = "http://searchapp.cnn.com/search/query.jsp?page=1&npp=1000&start=1&text=serenitie%2Bwang&type=all&bucket=true&sort=date&csiID=csi2&collection=STORIES";
+$searchUrl = "http://searchapp.cnn.com/search/query.jsp?page=1&npp=1000&start=1&text=%2522Serenitie%2BWang%2522&type=all&bucket=true&sort=date&csiID=csi2&collection=STORIES";
 $html = get_web_page($searchUrl);
 $dom = new DOMDocument();
 @$dom->loadHTML($html);
@@ -54,12 +54,15 @@ if (!is_null($textArea) && $textArea->length > 0) {
         if (strpos($url, ".com") === false) {
             $url = "http://www.cnn.com" . $url;
         }
+        $dateStr = formatDate($result["mediaDateUts"]);
 
-        $item = $channel->addChild("item");
-        $item->addChildWithCDATA("title", $result["title"]);
-        $item->addChildWithCDATA("description", $result["description"]);
-        $item->addChild("link", $url);
-        $item->addChild("pubDate", formatDate($result["mediaDateUts"]));
+        if (strlen($dateStr) > 0) {
+            $item = $channel->addChild("item");
+            $item->addChildWithCDATA("title", $result["title"]);
+            $item->addChildWithCDATA("description", $result["description"]);
+            $item->addChild("link", $url);
+            $item->addChild("pubDate", $dateStr);
+        }
     }
 }
 
