@@ -75,31 +75,35 @@ function get_web_page($url)
     return $content;
 }
 
-function getFullPubDate($url) {
+function getPageInfo($url) {
     $debug = true;
 
     //First, try to get the pub date from the database
-    $dbPubDate = getPubDateFromDB($url);
-    if ($dbPubDate !== false) {
+    $pageInfo = getPageInfoFromDB($url);
+    if ($pageInfo !== false) {
         if ($debug) {
-            echo "Found url in DB";
+            echo "Found page in DB";
             echo "\n";
-            echo date_format($dbPubDate, 'c');
+            echo $pageInfo[pub_date];
+            echo "\n";
+            echo $pageInfo[title];
             echo "\n";
         }
 
-        return $dbPubDate;
+        return $pageInfo;
     }
 
     $metaDateFormat = "Y-m-d\TH:i:sT";
     $spanDateFormat = "Y-m-d H:i:sT";
     $response = get_web_page($url);
+    $title = "";
     $date = false;
     if ($response !== false) {
         $dom = new DOMDocument();
         @$dom->loadHTML($response);
         $xpath = new DOMXpath($dom);
         
+        $title = $xpath->query("//title")[0]->nodeValue;
         $metaElement = $xpath->query("*/meta[@name='pubdate']");
         $spanElement = $xpath->query("//span[@id='pubtime']");
 
@@ -135,12 +139,17 @@ function getFullPubDate($url) {
         }
     }
 
-    //Add the new date to the DB to cache it with the associated URL
+    $pageInfo = Array();
+    $pageInfo[href] = $url;
+    $pageInfo[pub_date] = date_format($date, 'c');
+    $pageInfo[title] = htmlspecialchars(trim($title));
+
+    //Add the new page to the DB to cache its information
     if ($date !== false) {
-        addPubDateToDB($url, date_format($date, 'c'));
+        addPageInfoToDB($pageInfo);
     }
 
-    return $date;
+    return $pageInfo;
 }
 
 function printDate($date) {
@@ -156,8 +165,8 @@ $urlWithMeta = "http://news.xinhuanet.com/english/2016-10/14/c_135754769.htm";
 $urlWithSpan = "http://news.xinhuanet.com/english/2016-10/14/c_135755015.htm";
 $urlWithSpanTwo = "http://news.xinhuanet.com/english/2016-10/16/c_135756947.htm";
 
-printDate(getFullPubDate($urlWithMeta));
-printDate(getFullPubDate($urlWithSpan));
-printDate(getFullPubDate($urlWithSpanTwo));
+printDate(date_create(getPageInfo($urlWithMeta)[pub_date]));
+printDate(date_create(getPageInfo($urlWithSpan)[pub_date]));
+printDate(date_create(getPageInfo($urlWithSpanTwo)[pub_date]));
 
 ?>

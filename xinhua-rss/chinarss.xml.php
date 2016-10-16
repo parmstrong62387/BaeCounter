@@ -45,7 +45,7 @@ class RssItem {
     public $month;
     public $day;
 
-    private $fullPubDate;
+    private $pageInfo;
 
     public function __construct($href, $title, $year, $month, $day) 
     {
@@ -57,11 +57,19 @@ class RssItem {
     }
 
     public function getFullPubDate() {
-        if (!isset($this->fullPubDate)) {
-            $this->fullPubDate = getFullPubDate($this->href);
+        if (!isset($this->pageInfo)) {
+            $this->pageInfo = getPageInfo($this->href);
         }
 
-        return $this->fullPubDate;
+        return date_create($this->pageInfo[pub_date]);
+    }
+
+    public function getPageTitle() {
+        if (!isset($this->pageInfo)) {
+            $this->pageInfo = getPageInfo($this->href);
+        }
+
+        return $this->pageInfo[title];
     }
 
 }
@@ -129,31 +137,35 @@ function get_web_page($url)
     return $content;
 }
 
-function getFullPubDate($url) {
+function getPageInfo($url) {
     $debug = false;
 
     //First, try to get the pub date from the database
-    $dbPubDate = getPubDateFromDB($url);
-    if ($dbPubDate !== false) {
+    $pageInfo = getPageInfoFromDB($url);
+    if ($pageInfo !== false) {
         if ($debug) {
-            echo "Found url in DB";
+            echo "Found page in DB";
             echo "\n";
-            echo $dbPubDate;
+            echo $pageInfo[pub_date];
+            echo "\n";
+            echo $pageInfo[title];
             echo "\n";
         }
 
-        return $dbPubDate;
+        return $pageInfo;
     }
 
     $metaDateFormat = "Y-m-d\TH:i:sT";
     $spanDateFormat = "Y-m-d H:i:sT";
     $response = get_web_page($url);
+    $title = "";
     $date = false;
     if ($response !== false) {
         $dom = new DOMDocument();
         @$dom->loadHTML($response);
         $xpath = new DOMXpath($dom);
         
+        $title = $xpath->query("//title")[0]->nodeValue;
         $metaElement = $xpath->query("*/meta[@name='pubdate']");
         $spanElement = $xpath->query("//span[@id='pubtime']");
 
@@ -189,12 +201,17 @@ function getFullPubDate($url) {
         }
     }
 
-    //Add the new date to the DB to cache it with the associated URL
+    $pageInfo = Array();
+    $pageInfo[href] = $url;
+    $pageInfo[pub_date] = date_format($date, 'c');
+    $pageInfo[title] = htmlspecialchars(trim($title));
+
+    //Add the new page to the DB to cache its information
     if ($date !== false) {
-        addPubDateToDB($url, date_format($date, 'c'));
+        addPageInfoToDB($pageInfo);
     }
 
-    return $date;
+    return $pageInfo;
 }
 
 try {
@@ -248,7 +265,11 @@ try {
         $item = $channel->addChild('item');
         $rssItem = $rssItems[$i];
 
-        $item->addChildWithCDATA('title', $rssItem->title);
+        if (strlen(trim($rssItem->title)) > 0) {
+            $item->addChildWithCDATA('title', $rssItem->title);
+        } else {
+            $item->addChildWithCDATA('title', $rssItem->getPageTitle());
+        }
         $item->addChild('description', 'Hi baee');
         $item->addChild('link', $rssItem->href);
 

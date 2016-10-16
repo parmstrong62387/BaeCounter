@@ -55,7 +55,7 @@
 		}
 	}
 
-	function getPubDateFromDB($href) {
+	function getPageInfoFromDB($href) {
 		if (!isConnected()) {
 			connect();
 		}
@@ -67,19 +67,30 @@
 	   $qry_result = mysql_query($query) or die(mysql_error());
 
 	   while($row = mysql_fetch_array($qry_result)) {
-	   		return date_create($row[pub_date]);
+	   		return $row;
 	   }
 
 	   return false;
 	}
 
-	function addPubDateToDB($href, $pubDate) {
+	function addPageInfoToDB($pageInfo) {
 		if (!isConnected()) {
 			connect();
 		}
 
+		$keys = Array();
+		$values = Array();
+
+		foreach ($pageInfo as $key => $value) {
+			array_push($keys, $key);
+			array_push($values, $value);
+		}
+
+		$keyStr = '(`' . join('`, `', $keys) . '`)';
+		$valueStr = '("' . join('", "', $values) . '")';
+
 		//build query
-	   $query = "INSERT INTO pub_dates (href, pub_date) VALUES ('$href', '$pubDate')";
+	   $query = "INSERT INTO pub_dates " . $keyStr . " VALUES " . $valueStr;
 
 	   mysql_query($query) or die(mysql_error());
 	}
