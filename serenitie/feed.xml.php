@@ -15,12 +15,32 @@ $dom = new DOMDocument();
 $xpath = new DOMXpath($dom);    
 $textArea = $xpath->query("//textarea[@id='jsCode']");
 
+function sortResults($a, $b) {
+    $format = "h:i A, M d, Y";
+    $dateA = date_create_from_format($format, $a["mediaDateUts"]);
+    $dateB = date_create_from_format($format, $b["mediaDateUts"]);
+
+    if ($dateA === false || $dateB === false) {
+        return 0;
+    }
+
+    if ($dateA == $dateB) {
+       return 0;
+    }
+
+    return -1 * ($dateA < $dateB ? -1 : 1);
+}
+
 if (!is_null($textArea) && $textArea->length > 0) {
     $json = json_decode($textArea[0]->nodeValue, true);
-    foreach ($json["results"][0] as $result) {
+    
+    $results = $json["results"][0];
+    usort($results, sortResults);
+    
+    foreach ($results as $result) {
         $url = $result["url"];
         if (strpos($url, ".com") === false) {
-            $url = "www.cnn.com" . $url;
+            $url = "http://www.cnn.com" . $url;
         }
 
         $item = $channel->addChild("item");
