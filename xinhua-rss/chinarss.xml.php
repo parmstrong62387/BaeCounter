@@ -226,24 +226,25 @@ try {
         $href = $link->getAttribute('href');
         $title = $link->nodeValue;
 
-        if (strpos($href, 'news.xinhuanet.com') !== false && !in_array($addedLinks, $href)) {
+        if (strpos($href, 'news.xinhuanet.com') !== false && !in_array($href, $addedLinks)) {
+
+            array_push($addedLinks, $href);
 
             if (preg_match($pattern, $href, $matches, PREG_OFFSET_CAPTURE)) {
-                array_push($addedLinks, $href);
                 $year = $matches[1][0];
                 $month = $matches[2][0];
                 $day = $matches[3][0];
                 
                 array_push($rssItems, new RssItem($href, $title, $year, $month, $day));
+            } else {
+                array_push($rssItems, new RssItem($href, $title, "", "", ""));
             }
         }
     }
 
-    usort($rssItems, sortRssItemsByPubDate);
-    $rssItems = array_slice($rssItems, 0, 30);
     usort($rssItems, sortRssItemsByFullPubDate);
 
-    for ($i = 0; $i < 30 && $i < count($rssItems); $i++) {
+    for ($i = 0; $i < count($rssItems); $i++) {
         $item = $channel->addChild('item');
         $rssItem = $rssItems[$i];
 
@@ -253,18 +254,12 @@ try {
 
         if ($rssItem->getFullPubDate() !== false) {
             $item->addChild('pubDate', date_format($rssItem->getFullPubDate(), 'c'));
-        } else {
+        } else if (strlen($rssItem->year) > 0) {
             $item->addChild('pubDate', $rssItem->year . '-' . $rssItem->month . '-' . $rssItem->day);
+        } else {
+            unset($item);
         }
     }
-
-
-    // $item->addChild('pubDate', $matches[1][0] . '-' . $matches[2][0] . '-' . $matches[3][0]);
-
-    // $fullPubDate = getFullPubDate($href);
-    //         if ($fullPubDate !== false) {
-    //             $item->addChild('pubDate', date_format($fullPubDate, 'c'));
-    //         } 
 
     $XML = $rss->asXML();
     $XML = str_replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="utf-8"?>', $XML);
