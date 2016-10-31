@@ -10,7 +10,7 @@ class CnnRssItem extends RssItem {
         return $xpath->query("//title")[0]->nodeValue;
     }
 
-    protected function getDateFromDom($xpath, $debug) {
+    protected function getDateFromDom($xpath, $href, $debug) {
         $date = false;
         $pubDate = $xpath->query("*/meta[@name='pubdate']");
         $dateIssued = $xpath->query("*/meta[@name='DC.date.issued']");
@@ -26,7 +26,7 @@ class CnnRssItem extends RssItem {
             if (strpos($dateStr, 'Z') === false) {
                 $dateStr = $dateStr . 'Z';
             }
-            $date = date_create_from_format($metaDateFormat, $dateStr);
+            $date = date_create($dateStr);
         }
 
         return $date;

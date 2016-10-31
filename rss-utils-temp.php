@@ -65,7 +65,7 @@ abstract class RssItem {
     }
 
     private function getPageInfo($url) {
-        $debug = true;
+        $debug = false;
 
         //First, try to get the pub date from the database
         $pageInfo = getPageInfoFromDB($url);
@@ -214,14 +214,14 @@ function get_web_page($url)
 {
     $options = array(
         CURLOPT_RETURNTRANSFER => true,     // return web page
-        CURLOPT_HEADER         => false,    // don't return headers
-        CURLOPT_FOLLOWLOCATION => true,     // follow redirects
-        CURLOPT_ENCODING       => "",       // handle all encodings
-        CURLOPT_USERAGENT      => "spider", // who am i
-        CURLOPT_AUTOREFERER    => true,     // set referer on redirect
-        CURLOPT_CONNECTTIMEOUT => 15,      // timeout on connect
-        CURLOPT_TIMEOUT        => 15,      // timeout on response
-        CURLOPT_MAXREDIRS      => 10,       // stop after 10 redirects
+        // CURLOPT_HEADER         => false,    // don't return headers
+        // CURLOPT_FOLLOWLOCATION => true,     // follow redirects
+        // CURLOPT_ENCODING       => "",       // handle all encodings
+        // CURLOPT_USERAGENT      => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36", // who am i
+        // CURLOPT_AUTOREFERER    => true,     // set referer on redirect
+        // CURLOPT_CONNECTTIMEOUT => 15,      // timeout on connect
+        // CURLOPT_TIMEOUT        => 15,      // timeout on response
+        // CURLOPT_MAXREDIRS      => 10,       // stop after 10 redirects
 
     );
 
