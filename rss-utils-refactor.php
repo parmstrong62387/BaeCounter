@@ -39,19 +39,13 @@ abstract class RssItem {
 
     public $href;
     public $title;
-    public $year;
-    public $month;
-    public $day;
 
     private $pageInfo;
 
-    public function __construct($href, $title, $year, $month, $day) 
+    public function __construct($href, $title) 
     {
         $this->href = $href;
         $this->title = $title;
-        $this->year = $year;
-        $this->month = $month;
-        $this->day = $day;
     }
 
     public function getFullPubDate() {
@@ -117,6 +111,109 @@ abstract class RssItem {
 
     protected abstract function getDateFromDom($xpath, $debug);
 
+}
+
+abstract class RssFeed {
+
+    private $feedUrl;
+    private $feedTitle;
+    private $feedDescription;
+    private $feedGenerator;
+    private $rssItems;
+    private $addedLinks;
+    private $feedLoaded;
+
+    public function __construct($feedUrl, $feedTitle, $feedDescription, $feedGenerator) {
+        $this->feedUrl = $feedUrl;
+        $this->feedTitle = $feedTitle;
+        $this->feedDescription = $feedDescription;
+        $this->feedGenerator = $feedGenerator;
+        $this->rssItems = Array();
+        $this->addedLinks = Array();
+        $this->feedLoaded = false;
+    }
+
+    public function printFeed() {
+        if (!$this->feedLoaded) {
+            $this->loadFeed();
+        }
+
+        $rss = new SimpleXMLExtended('<rss version="2.0"/>');
+        $channel = $rss->addChild('channel');
+        $channel->addChild('title', $this->feedTitle);
+        $channel->addChild('description', $this->feedDescription);
+        $channel->addChild('generator', $this->feedGenerator);
+
+        for ($i = 0; $i < count($this->rssItems); $i++) {
+            $item = $channel->addChild('item');
+            $rssItem = $this->rssItems[$i];
+
+            if (strlen(trim($rssItem->title)) > 0) {
+                $item->addChildWithCDATA('title', $rssItem->title);
+            } else {
+                $item->addChildWithCDATA('title', $rssItem->getPageTitle());
+            }
+            $item->addChild('description', 'Hi baee');
+            $item->addChild('link', $rssItem->href);
+
+            if ($rssItem->getFullPubDate() !== false) {
+                $item->addChild('pubDate', date_format($rssItem->getFullPubDate(), 'c'));
+            } else {
+                unset($item);
+            }
+        }
+
+        $XML = $rss->asXML();
+        $XML = str_replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="utf-8"?>', $XML);
+        Header('Content-type: application/xml');
+        print($XML);
+    }
+
+    private function loadFeed() {
+        $html = get_web_page($this->feedUrl);
+
+        # Create a DOM parser object
+        $dom = new DOMDocument();
+        @$dom->loadHTML($html);
+
+        foreach($this->getLinksFromDom($dom) as $link) {
+            $href = $link->getAttribute('href');
+            $title = $link->nodeValue;
+
+            if (!in_array($href, $this->addedLinks) && $this->shouldInclude($href)) {
+                array_push($this->addedLinks, $href);
+                array_push($this->rssItems, $this->constructRssItem($href, $title));
+            }
+        }
+
+        usort($this->rssItems, sortRssItemsByFullPubDate);
+
+        $this->feedLoaded = true;
+    }
+
+    protected abstract function constructRssItem($href, $title);
+
+    protected abstract function getLinksFromDom($dom);
+
+    protected abstract function shouldInclude($link);
+
+}
+
+function sortRssItemsByFullPubDate($a, $b) {
+    $fullA = $a->getFullPubDate();
+    $fullB = $b->getFullPubDate();
+
+    if ($fullA == $fullB) {
+       return 0;
+    }
+
+    if ($fullA === false) {
+        return 1;
+    } else if ($fullB === false) {
+        return -1;
+    }
+
+    return -1 * ($fullA < $fullB ? -1 : 1);
 }
 
 function get_web_page($url)

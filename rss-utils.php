@@ -35,6 +35,187 @@ class SimpleXMLExtended extends SimpleXMLElement
     }
 }
 
+abstract class RssItem {
+
+    public $href;
+    public $title;
+
+    private $pageInfo;
+
+    public function __construct($href, $title) 
+    {
+        $this->href = $href;
+        $this->title = $title;
+    }
+
+    public function getFullPubDate() {
+        if (!isset($this->pageInfo)) {
+            $this->pageInfo = $this->getPageInfo($this->href);
+        }
+
+        return date_create($this->pageInfo[pub_date]);
+    }
+
+    public function getPageTitle() {
+        if (!isset($this->pageInfo)) {
+            $this->pageInfo = $this->getPageInfo($this->href);
+        }
+
+        return $this->pageInfo[title];
+    }
+
+    private function getPageInfo($url) {
+        $debug = false;
+
+        //First, try to get the pub date from the database
+        $pageInfo = getPageInfoFromDB($url);
+        if ($pageInfo !== false) {
+            if ($debug) {
+                echo "Found page in DB";
+                echo "\n";
+                echo $pageInfo[pub_date];
+                echo "\n";
+                echo $pageInfo[title];
+                echo "\n";
+            }
+
+            return $pageInfo;
+        }
+
+        $response = get_web_page($url);
+        $title = "";
+        $date = false;
+        if ($response !== false) {
+            $dom = new DOMDocument();
+            @$dom->loadHTML($response);
+            $xpath = new DOMXpath($dom);
+            
+            $title = $this->getTitleFromDom($xpath);
+            $date = $this->getDateFromDom($xpath);
+        }
+
+        $pageInfo = Array();
+        $pageInfo[href] = $url;
+        $pageInfo[pub_date] = date_format($date, 'c');
+        $pageInfo[title] = htmlspecialchars(trim($title));
+
+        //Add the new page to the DB to cache its information
+        if ($date !== false) {
+            addPageInfoToDB($pageInfo);
+        }
+
+        return $pageInfo;
+    }
+
+    protected abstract function getTitleFromDom($xpath);
+
+    protected abstract function getDateFromDom($xpath, $debug);
+
+}
+
+abstract class RssFeed {
+
+    private $feedUrl;
+    private $feedTitle;
+    private $feedDescription;
+    private $feedGenerator;
+    private $rssItems;
+    private $addedLinks;
+    private $feedLoaded;
+
+    public function __construct($feedUrl, $feedTitle, $feedDescription, $feedGenerator) {
+        $this->feedUrl = $feedUrl;
+        $this->feedTitle = $feedTitle;
+        $this->feedDescription = $feedDescription;
+        $this->feedGenerator = $feedGenerator;
+        $this->rssItems = Array();
+        $this->addedLinks = Array();
+        $this->feedLoaded = false;
+    }
+
+    public function printFeed() {
+        if (!$this->feedLoaded) {
+            $this->loadFeed();
+        }
+
+        $rss = new SimpleXMLExtended('<rss version="2.0"/>');
+        $channel = $rss->addChild('channel');
+        $channel->addChild('title', $this->feedTitle);
+        $channel->addChild('description', $this->feedDescription);
+        $channel->addChild('generator', $this->feedGenerator);
+
+        for ($i = 0; $i < count($this->rssItems); $i++) {
+            $item = $channel->addChild('item');
+            $rssItem = $this->rssItems[$i];
+
+            if (strlen(trim($rssItem->title)) > 0) {
+                $item->addChildWithCDATA('title', $rssItem->title);
+            } else {
+                $item->addChildWithCDATA('title', $rssItem->getPageTitle());
+            }
+            $item->addChild('description', 'Hi baee');
+            $item->addChild('link', $rssItem->href);
+
+            if ($rssItem->getFullPubDate() !== false) {
+                $item->addChild('pubDate', date_format($rssItem->getFullPubDate(), 'c'));
+            } else {
+                unset($item);
+            }
+        }
+
+        $XML = $rss->asXML();
+        $XML = str_replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="utf-8"?>', $XML);
+        Header('Content-type: application/xml');
+        print($XML);
+    }
+
+    private function loadFeed() {
+        $html = get_web_page($this->feedUrl);
+
+        # Create a DOM parser object
+        $dom = new DOMDocument();
+        @$dom->loadHTML($html);
+
+        foreach($this->getLinksFromDom($dom) as $link) {
+            $href = $link->getAttribute('href');
+            $title = $link->nodeValue;
+
+            if (!in_array($href, $this->addedLinks) && $this->shouldInclude($href)) {
+                array_push($this->addedLinks, $href);
+                array_push($this->rssItems, $this->constructRssItem($href, $title));
+            }
+        }
+
+        usort($this->rssItems, sortRssItemsByFullPubDate);
+
+        $this->feedLoaded = true;
+    }
+
+    protected abstract function constructRssItem($href, $title);
+
+    protected abstract function getLinksFromDom($dom);
+
+    protected abstract function shouldInclude($link);
+
+}
+
+function sortRssItemsByFullPubDate($a, $b) {
+    $fullA = $a->getFullPubDate();
+    $fullB = $b->getFullPubDate();
+
+    if ($fullA == $fullB) {
+       return 0;
+    }
+
+    if ($fullA === false) {
+        return 1;
+    } else if ($fullB === false) {
+        return -1;
+    }
+
+    return -1 * ($fullA < $fullB ? -1 : 1);
+}
+
 function get_web_page($url)
 {
     $options = array(
