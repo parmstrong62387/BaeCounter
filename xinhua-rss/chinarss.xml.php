@@ -1,7 +1,7 @@
 <?php
 
 include '../dbconn.php';
-include '../rss-utils-refactor.php';
+include '../rss-utils.php';
 
 class XinhuaRssItem extends RssItem {
 
