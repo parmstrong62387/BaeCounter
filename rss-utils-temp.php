@@ -65,7 +65,7 @@ abstract class RssItem {
     }
 
     private function getPageInfo($url) {
-        $debug = false;
+        $debug = true;
 
         //First, try to get the pub date from the database
         $pageInfo = getPageInfoFromDB($url);
@@ -115,13 +115,13 @@ abstract class RssItem {
 
 abstract class RssFeed {
 
-    private $feedUrl;
-    private $feedTitle;
-    private $feedDescription;
-    private $feedGenerator;
-    private $rssItems;
-    private $addedLinks;
-    private $feedLoaded;
+    protected $feedUrl;
+    protected $feedTitle;
+    protected $feedDescription;
+    protected $feedGenerator;
+    protected $rssItems;
+    protected $addedLinks;
+    protected $feedLoaded;
 
     public function __construct($feedUrl, $feedTitle, $feedDescription, $feedGenerator) {
         $this->feedUrl = $feedUrl;
@@ -169,21 +169,10 @@ abstract class RssFeed {
         print($XML);
     }
 
-    private function loadFeed() {
-        $html = get_web_page($this->feedUrl);
-
-        # Create a DOM parser object
-        $dom = new DOMDocument();
-        @$dom->loadHTML($html);
-
-        foreach($this->getLinksFromDom($dom) as $link) {
-            $href = '';
-            if ($link->hasAttribute('data-href')) {
-                $href = $link->getAttribute('data-href');
-            } else {
-                $href = $link->getAttribute('href');
-            }
-            $title = $link->nodeValue;
+    public function loadFeed() {
+        foreach($this->getLinks() as $link) {
+            $href = $link['link'];
+            $title = $link['title'];
 
             if (!in_array($href, $this->addedLinks) && $this->shouldInclude($href)) {
                 array_push($this->addedLinks, $href);
@@ -198,7 +187,7 @@ abstract class RssFeed {
 
     protected abstract function constructRssItem($href, $title);
 
-    protected abstract function getLinksFromDom($dom);
+    protected abstract function getLinks();
 
     protected abstract function shouldInclude($link);
 
